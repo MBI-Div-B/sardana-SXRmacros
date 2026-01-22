@@ -72,28 +72,38 @@ def probe_state(self):
 def pump_on(self):
     """Macro pump_on"""
     ds = self.getEnv("TangoDevices")
-    proxy = DeviceProxy(ds['thorlabsMFF100_pump'])
-    proxy.Open()
-    sleep(0.5)
-    self.output("Pump mirror open!")
+    try:
+        proxy = DeviceProxy(ds['thorlabsMFF100_pump'])
+        proxy.Open()
+        sleep(0.5)
+        self.output("Pump mirror open!")
+    except:
+        self.warning("No Pump flip mount found")
 
 
 @macro()
 def pump_off(self):
     """Macro pump_off"""
     ds = self.getEnv("TangoDevices")
-    proxy = DeviceProxy(ds['thorlabsMFF100_pump'])
-    proxy.Close()
-    sleep(0.5)
-    self.output("Pump mirror closed!")
+    try:
+        proxy = DeviceProxy(ds['thorlabsMFF100_pump'])
+        proxy.Close()
+        sleep(0.5)
+        self.output("Pump mirror closed!")
+    except:
+        self.warning("No Pump flip mount found")
 
 
 @macro()
 def pump_state(self):
     """Macro pump_state"""
     ds = self.getEnv("TangoDevices")
-    proxy = DeviceProxy(ds['thorlabsMFF100_pump'])
-    self.output("Pump flip mount state: %s" % proxy.state())
+    try:
+        proxy = DeviceProxy(ds['thorlabsMFF100_pump'])
+        self.output("Pump flip mount state: %s" % proxy.state())
+    except:
+        self.warning("No Pump flip mount found")
+
 
 @macro()
 def shutter_enable(self):
