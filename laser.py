@@ -1,4 +1,4 @@
-from sardana.macroserver.macro import imacro, macro, Type, Optional, Macro
+from sardana.macroserver.macro import imacro, macro, Type
 from tango import DeviceProxy
 import numpy as np
 from time import sleep
@@ -8,8 +8,7 @@ from time import sleep
 def laser_on(self):
     """Macro laser_on"""
     ds = self.getEnv("TangoDevices")
-    is_enabled = DeviceProxy(ds['thindisk_thorlabsSC10_seed']).enabled
-    if is_enabled:
+    if self.runMacro("shutter_is_enabled", False):
         self.warning("The seed shutter is still enabled! Can not flip mirror!")
         return
     proxy = DeviceProxy(ds['thindisk_thorlabsMFF100_compressor'])
@@ -21,8 +20,7 @@ def laser_on(self):
 def laser_off(self):
     """Macro laser_off"""
     ds = self.getEnv("TangoDevices")
-    is_enabled = DeviceProxy(ds['thindisk_thorlabsSC10_seed']).enabled
-    if is_enabled:
+    if self.runMacro("shutter_is_enabled", False):
         self.warning("The seed shutter is still enabled! Can not flip mirror!")
         return
     proxy = DeviceProxy(ds['thindisk_thorlabsMFF100_compressor'])
@@ -43,12 +41,11 @@ def probe_on(self):
     """Macro laser_on"""
     self.output("Enter probe_on")
     ds = self.getEnv("TangoDevices")
-    is_enabled = DeviceProxy(ds['thindisk_thorlabsSC10_seed']).enabled
-    if is_enabled:
+    if self.runMacro("shutter_is_enabled", False):
         self.warning("The seed shutter is still enabled! Can not flip mirror!")
         return
     proxy = DeviceProxy(ds['thorlabsMFF100_probe'])
-    proxy.Open() # not inverted for rsxs!!
+    proxy.Open()
     self.output("Probe PXS mirror open!")
 
 
@@ -56,12 +53,11 @@ def probe_on(self):
 def probe_off(self):
     """Macro laser_off"""
     ds = self.getEnv("TangoDevices")
-    is_enabled = DeviceProxy(ds['thindisk_thorlabsSC10_seed']).enabled
-    if is_enabled:
+    if self.runMacro("shutter_is_enabled", False):
         self.warning("The seed shutter is still enabled! Can not flip mirror!")
         return
     proxy = DeviceProxy(ds['thorlabsMFF100_probe'])
-    proxy.Close() # not inverted for rsxs!!
+    proxy.Close()
     self.output("Probe PXS mirror closed!")
 
 
@@ -77,7 +73,7 @@ def pump_on(self):
     """Macro pump_on"""
     ds = self.getEnv("TangoDevices")
     proxy = DeviceProxy(ds['thorlabsMFF100_pump'])
-    proxy.Open()  # inverted in tango in that way it is right
+    proxy.Open()
     sleep(0.5)
     self.output("Pump mirror open!")
 
@@ -87,7 +83,7 @@ def pump_off(self):
     """Macro pump_off"""
     ds = self.getEnv("TangoDevices")
     proxy = DeviceProxy(ds['thorlabsMFF100_pump'])
-    proxy.Close()  # same as above
+    proxy.Close()
     sleep(0.5)
     self.output("Pump mirror closed!")
 
